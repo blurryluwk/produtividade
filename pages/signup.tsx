@@ -1,10 +1,10 @@
-// pages/login.tsx
+// pages/signup.tsx
 import { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../lib/firebaseConfig'; 
 import { useRouter } from 'next/router';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -12,24 +12,21 @@ export default function LoginPage() {
 
   const auth = getAuth(app);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      router.push('/dashboard'); // redirecionar para dashboard após login
+      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+      console.log('Usuário criado:', userCredential.user);
+      router.push('/login'); // redireciona após cadastro
     } catch (error: any) {
-      setErro(error.message || 'Erro no login');
+      setErro(error.message || 'Erro no cadastro');
     }
-  };
-
-  const irParaCadastro = () => {
-    router.push('/signup');
   };
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
+      <h1>Cadastro</h1>
+      <form onSubmit={handleSignup}>
         <input
           type="email"
           placeholder="Email"
@@ -42,13 +39,8 @@ export default function LoginPage() {
           value={senha}
           onChange={e => setSenha(e.target.value)}
         /><br /><br />
-        <button type="submit">Entrar</button>
+        <button type="submit">Cadastrar</button>
       </form>
-
-      <br />
-      <p>Não tem uma conta?</p>
-      <button onClick={irParaCadastro}>Criar conta</button>
-
       {erro && <p style={{ color: 'red' }}>{erro}</p>}
     </div>
   );
