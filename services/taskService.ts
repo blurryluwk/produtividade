@@ -1,5 +1,5 @@
 import { Task, TaskPriority } from "../types/task";
-import { createTask, getTasksByUser } from "../repositories/taskRepository";
+import { createTask, getTasksByUser, deleteTaskById, updateTaskStatus } from "../repositories/taskRepository";
 
 function calculateXP(priority: TaskPriority): number {
   switch (priority) {
@@ -22,4 +22,12 @@ export async function addNewTask(userId: string, data: Omit<Task, "userId" | "xp
 
 export async function fetchUserTasks(userId: string): Promise<Task[]> {
   return await getTasksByUser(userId);
+}
+
+export async function removeTask(taskId: string) {
+  return await deleteTaskById(taskId);
+}
+
+export async function completeTask(taskId: string) {
+  return await updateTaskStatus(taskId, "completed");
 }
