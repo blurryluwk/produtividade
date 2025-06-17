@@ -1,8 +1,8 @@
-// pages/login.tsx
 import { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from '../lib/firebaseConfig'; 
+import { app } from '../lib/firebaseConfig';
 import { useRouter } from 'next/router';
+import '../app/globals.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      router.push('/dashboard'); // redirecionar para dashboard após login
+      router.push('/dashboard');
     } catch (error: any) {
       setErro(error.message || 'Erro no login');
     }
@@ -27,29 +27,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="login-container">
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Digite seu email..."
           value={email}
           onChange={e => setEmail(e.target.value)}
-        /><br /><br />
+        />
         <input
           type="password"
-          placeholder="Senha"
+          placeholder="Digite sua senha..."
           value={senha}
           onChange={e => setSenha(e.target.value)}
-        /><br /><br />
+        />
         <button type="submit">Entrar</button>
       </form>
 
-      <br />
-      <p>Não tem uma conta?</p>
-      <button onClick={irParaCadastro}>Criar conta</button>
+      <div
+        className="signup-link"
+        onClick={irParaCadastro}
+      >
+        Crie sua conta aqui!
+      </div>
 
-      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+      {erro && <p className="error-message">{erro}</p>}
     </div>
   );
 }

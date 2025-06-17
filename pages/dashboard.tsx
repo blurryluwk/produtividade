@@ -25,7 +25,7 @@ export default function Dashboard() {
   return (
     <div>
       <h1>Dashboard</h1>
-      <p>Bem-vindo, {user?.email}</p>
+      <p>Bem-vindo, {user?.displayName || user?.email}</p>
     </div>
   );
 }
