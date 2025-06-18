@@ -140,9 +140,12 @@ body {
 .input-due-date {
   width: 100%; 
   padding: 8px;
-  border-radius: 5px;
-  border: none;
+  border-radius: 8px;
+  border: 2px solid #3b98c7;
   box-sizing: border-box;
+  background-color: transparent;
+  color: white;
+  transition: 0.3s;
 }
 
 .input-description {
@@ -154,10 +157,16 @@ body {
   margin-top: 15px;
   padding: 8px 16px;
   border: none;
-  background-color: #008cba;
+  background: linear-gradient(90deg, #3b98c7, #59468b);
   color: white;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  width: 100%;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  transition: 0.3s;
+
 }
 
 /* Seção: Minhas Tarefas */
