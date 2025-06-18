@@ -1,6 +1,7 @@
 import { Task, TaskPriority } from "../types/task";
 import { taskRepository } from "../repositories/taskRepository";
 
+// Utilitário para mapear task do Prisma para Task do frontend
 function mapPrismaTaskToTask(prismaTask: any): Task {
   return {
     id: prismaTask.id,
@@ -15,27 +16,37 @@ function mapPrismaTaskToTask(prismaTask: any): Task {
   };
 }
 
-export async function createTask(task: Task): Promise<Task> {
-  const newTask = await taskRepository.create({
-    ...task,
-    dueDate: new Date(task.dueDate),
-    createdAt: task.createdAt || new Date(),
-  });
-  return mapPrismaTaskToTask(newTask);
-}
+export const taskService = {
+  async create(task: Task): Promise<Task> {
+    const newTask = await taskRepository.create({
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      dueDate: new Date(task.dueDate),
+      status: task.status,
+      xp: task.xp,
+      userId: task.userId,
+      createdAt: task.createdAt || new Date(),
+    });
 
-export async function getTasksByUser(userId: number): Promise<Task[]> {
-  const tasks = await taskRepository.findByUser(userId);
-  return tasks.map(mapPrismaTaskToTask);
-}
+    return mapPrismaTaskToTask(newTask);
+  },
 
-export async function updateTask(taskId: number, data: Partial<Task>): Promise<void> {
-  await taskRepository.update(taskId, {
-    ...data,
-    dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-  });
-}
+  async getByUser(userId: number): Promise<Task[]> {
+    const tasks = await taskRepository.findByUser(userId);
+    return tasks.map(mapPrismaTaskToTask);
+  },
 
-export async function deleteTask(taskId: number): Promise<void> {
-  await taskRepository.delete(taskId);
-}
+  async update(taskId: number, data: Partial<Task>): Promise<void> {
+    const dataToUpdate = {
+      ...data,
+      dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+    };
+
+    await taskRepository.update(taskId, dataToUpdate);
+  },
+
+  async delete(taskId: number): Promise<void> {
+    await taskRepository.delete(taskId);
+  },
+};
