@@ -167,8 +167,8 @@ export default function Dashboard() {
                       }`}
                     >
                       {task.status === "completed"
-                        ? "Concluída ✅"
-                        : "Pendente ⏳"}
+                        ? "✅ Concluída"
+                        : "⏳ Pendente"}
                     </span>
                   </div>
 
@@ -179,7 +179,7 @@ export default function Dashboard() {
                         id={`complete-${task.id}`}
                         onClick={() => handleComplete(task.id!)}
                       >
-                        ✔️ Concluir
+                        ✅ Concluir
                       </button>
                     )}
                     <button

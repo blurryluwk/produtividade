@@ -194,12 +194,27 @@ h1 {
   padding: 0;
 }
 
+.task-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white
+}
+
+.task-desc,
+.task-priority,
+.task-due,
+.task-status {
+  display: block;
+  margin-top: 4px;
+  color: white
+}
+
 .task-item {
   padding: 15px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: transparent;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -210,26 +225,15 @@ h1 {
   max-width: 70%;
 }
 
-.task-title {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
 
-.task-desc,
-.task-priority,
-.task-due,
-.task-status {
-  display: block;
-  margin-top: 4px;
-}
 
 .status-completed {
-  color: green;
+  color: lightgreen;
   font-weight: bold;
 }
 
 .status-pending {
-  color: orange;
+  color: yellow;
   font-weight: bold;
 }
 
@@ -247,12 +251,12 @@ h1 {
 }
 
 .btn-complete {
-  background-color: #28a745;
+  background-color: darkgreen;
   color: white;
 }
 
 .btn-delete {
-  background-color: #dc3545;
+  background-color: #ac1423;
   color: white;
 }
 
