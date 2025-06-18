@@ -52,18 +52,18 @@ Antes de executar o projeto, garante que tenha:
 
 ### 1. Clone o repositório:
 ```bash
-git clone https://github.com/blurryluwk/produtividade
+git clone https://github.com/blurryluwk/produtividade.git
 ```
 ### 2. Instalar as dependências:
 ```bash
 npm install
 ```
 ### 3. Configure o Banco de Dados:
-- Crie um BD no MySQL
+- Crie um Banco de Dados no MySQL
 - Atualize a variável ```DATABASE_URL``` no arquivo ```.env``` com as credenciais de acesso
 ### 4. Rode as migrações do Prisma:
 ```bash
-npx prisma migrate dev
+npx prisma migrate deploy
 ```
 ### 5. Execute o projeto:
 ```bash
