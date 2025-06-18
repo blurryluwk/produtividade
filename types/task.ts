@@ -6,7 +6,7 @@ export interface Task {
   title: string;
   description: string;
   priority: TaskPriority;
-  dueDate: string; // ISO format
+  dueDate: string;
   category: string;
   status: "pending" | "completed";
   xp: number;
