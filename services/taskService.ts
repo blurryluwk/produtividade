@@ -1,34 +1,41 @@
-import { Task } from "../types/task";
+import { Task, TaskPriority } from "../types/task";
+import { taskRepository } from "../repositories/taskRepository";
 
-const API_BASE = "/api/tasks";
-
-export async function fetchUserTasks(userId: string): Promise<Task[]> {
-  const res = await fetch(`${API_BASE}?userId=${userId}`);
-  if (!res.ok) throw new Error("Failed to fetch tasks");
-  return res.json();
+function mapPrismaTaskToTask(prismaTask: any): Task {
+  return {
+    id: prismaTask.id,
+    userId: prismaTask.userId,
+    title: prismaTask.title,
+    description: prismaTask.description,
+    priority: prismaTask.priority as TaskPriority,
+    dueDate: prismaTask.dueDate.toISOString(),
+    status: prismaTask.status,
+    xp: prismaTask.xp,
+    createdAt: prismaTask.createdAt,
+  };
 }
 
-export async function addNewTask(userId: string, task: Omit<Task, "id" | "userId">): Promise<Task> {
-  const res = await fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...task, userId }),
+export async function createTask(task: Task): Promise<Task> {
+  const newTask = await taskRepository.create({
+    ...task,
+    dueDate: new Date(task.dueDate),
+    createdAt: task.createdAt || new Date(),
   });
-  if (!res.ok) throw new Error("Failed to add task");
-  return res.json();
+  return mapPrismaTaskToTask(newTask);
 }
 
-export async function removeTask(taskId: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/${taskId}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete task");
+export async function getTasksByUser(userId: number): Promise<Task[]> {
+  const tasks = await taskRepository.findByUser(userId);
+  return tasks.map(mapPrismaTaskToTask);
 }
 
-export async function completeTask(taskId: string): Promise<Task> {
-  const res = await fetch(`${API_BASE}/${taskId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: "completed" }),
+export async function updateTask(taskId: number, data: Partial<Task>): Promise<void> {
+  await taskRepository.update(taskId, {
+    ...data,
+    dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
   });
-  if (!res.ok) throw new Error("Failed to complete task");
-  return res.json();
+}
+
+export async function deleteTask(taskId: number): Promise<void> {
+  await taskRepository.delete(taskId);
 }
