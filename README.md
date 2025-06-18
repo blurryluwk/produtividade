@@ -41,7 +41,7 @@ Este projeto é uma aplicação web que consiste em uma rotina de produtividade.
 ## 🖥️ Pré-requisitos
 
 Antes de executar o projeto, garante que tenha:
-- Node.js instalado [Download node.js](https://nodejs.org/)
+- Node.js instalado [Clique para baixar](https://nodejs.org/)
 - npm ou yarn
 - Ter o MySQL rodando (pode usar o XAMPP)
 - Prisma CLI instalado
