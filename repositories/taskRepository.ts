@@ -1,24 +1,26 @@
-import { db } from "../lib/firebaseConfig";
-import { collection, addDoc, query, where, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { Task } from "../types/task";
+import { db } from "../lib/firebaseConfig"; // supondo que exporta Firestore configurado
+import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, where } from "firebase/firestore";
 
-export async function createTask(task: Task) {
-  await addDoc(collection(db, "tasks"), task);
+const tasksCollection = collection(db, "tasks");
+
+export async function createTask(task: Task): Promise<Task> {
+  const docRef = await addDoc(tasksCollection, task);
+  return { ...task, id: docRef.id };
 }
 
 export async function getTasksByUser(userId: string): Promise<Task[]> {
-  const q = query(collection(db, "tasks"), where("userId", "==", userId));
+  const q = query(tasksCollection, where("userId", "==", userId));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  })) as Task[];
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Task[];
 }
 
-export async function deleteTaskById(taskId: string) {
-  await deleteDoc(doc(db, "tasks", taskId));
+export async function updateTask(taskId: string, data: Partial<Task>): Promise<void> {
+  const docRef = doc(tasksCollection, taskId);
+  await updateDoc(docRef, data);
 }
 
-export async function updateTaskStatus(taskId: string, status: "pending" | "completed") {
-  await updateDoc(doc(db, "tasks", taskId), { status });
+export async function deleteTask(taskId: string): Promise<void> {
+  const docRef = doc(tasksCollection, taskId);
+  await deleteDoc(docRef);
 }

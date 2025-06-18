@@ -1,5 +1,5 @@
 import { Task, TaskPriority } from "../types/task";
-import { createTask, getTasksByUser, deleteTaskById, updateTaskStatus } from "../repositories/taskRepository";
+import * as taskRepo from "../repositories/taskRepository";
 
 function calculateXP(priority: TaskPriority): number {
   switch (priority) {
@@ -9,25 +9,32 @@ function calculateXP(priority: TaskPriority): number {
   }
 }
 
-export async function addNewTask(userId: string, data: Omit<Task, "userId" | "xp" | "status" | "createdAt">) {
+export async function addNewTask(userId: string, data: Omit<Task, "userId" | "xp" | "status" | "createdAt" | "id">): Promise<Task> {
   const task: Task = {
     ...data,
     userId,
     status: "pending",
     xp: calculateXP(data.priority),
-    createdAt: new Date()
+    createdAt: new Date().toISOString(),
   };
-  return await createTask(task);
+  return taskRepo.createTask(task);
 }
 
 export async function fetchUserTasks(userId: string): Promise<Task[]> {
-  return await getTasksByUser(userId);
+  return taskRepo.getTasksByUser(userId);
 }
 
-export async function removeTask(taskId: string) {
-  return await deleteTaskById(taskId);
+export async function editTask(taskId: string, data: Partial<Task>): Promise<void> {
+  if (data.priority) {
+    data.xp = calculateXP(data.priority);
+  }
+  await taskRepo.updateTask(taskId, data);
+}
+
+export async function removeTask(taskId: string): Promise<void> {
+  await taskRepo.deleteTask(taskId);
 }
 
 export async function completeTask(taskId: string) {
-  return await updateTaskStatus(taskId, "completed");
+  return await taskRepo.updateTask(taskId, { status: 'completed' });
 }

@@ -6,9 +6,9 @@ export interface Task {
   title: string;
   description: string;
   priority: TaskPriority;
-  dueDate: string;
+  dueDate: string; 
   category: string;
   status: "pending" | "completed";
   xp: number;
-  createdAt: Date;
+  createdAt: string; 
 }
