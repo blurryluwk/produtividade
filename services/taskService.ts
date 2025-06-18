@@ -3,9 +3,9 @@ import * as taskRepo from "../repositories/taskRepository";
 
 function calculateXP(priority: TaskPriority): number {
   switch (priority) {
-    case "alta": return 30;
-    case "média": return 20;
-    case "baixa": return 10;
+    case "Alta": return 30;
+    case "Média": return 20;
+    case "Baixa": return 10;
   }
 }
 

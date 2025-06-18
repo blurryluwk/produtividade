@@ -11,7 +11,7 @@ import ProgressBar from "../components/ProgressBar";
 import "../app/globals.css";
 import StarParticles from "../components/StarParticles";
 
-const priorities: TaskPriority[] = ["baixa", "média", "alta"];
+const priorities: TaskPriority[] = ["Baixa", "Média", "Alta"];
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
