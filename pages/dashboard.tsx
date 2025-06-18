@@ -8,6 +8,7 @@ import {
 import { Task, TaskPriority } from "../types/task";
 import { getAuth } from "firebase/auth";
 import ProgressBar from '../components/ProgressBar';
+import '../app/globals.css';
 
 const priorities: TaskPriority[] = ["baixa", "média", "alta"];
 
