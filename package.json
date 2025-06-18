@@ -12,12 +12,31 @@
     "firebase": "^11.9.0",
     "next": "15.3.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
+  "type": "module",
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "typescript": "^5"
-  }
+  },
+  "description": "Este projeto é uma aplicação web que combina produtividade com elementos de gamificação. O usuário pode cadastrar tarefas, marcar como concluídas ou exclui-las e ganhar pontos de experiência (XP) a cada tarefa finalizada. O sistema inclui funcionalidades de autenticação (login e cadastro) e permite o gerenciamento completo de tarefas.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blurryluwk/produtividade.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blurryluwk/produtividade/issues"
+  },
+  "homepage": "https://github.com/blurryluwk/produtividade#readme"
 }
