@@ -180,7 +180,7 @@ export default function Dashboard() {
       <div id="dashboard-stats" className="dashboard-stats">
         <h2>Estatísticas</h2>
 
-        <p id="total-tasks">Tarefas Concluídas: {tasks.length}/{tasks.filter((t) => t.status === "completed").length}</p>
+        <p id="total-tasks">Tarefas Concluídas: {tasks.filter((t) => t.status === "completed").length}/{tasks.length}</p>
         <p id="total-xp">
           XP Total:{" "}
           {tasks.reduce(
