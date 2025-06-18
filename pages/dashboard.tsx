@@ -1,19 +1,51 @@
 import { useEffect, useState } from "react";
-import {
-  fetchUserTasks,
-  addNewTask,
-  removeTask,
-  completeTask,
-} from "../services/taskService";
 import { Task, TaskPriority } from "../types/task";
-import { getAuth } from "firebase/auth";
 import ProgressBar from "../components/ProgressBar";
 import "../app/globals.css";
 import StarParticles from "../components/StarParticles";
 
+// Prioridades fixas
 const priorities: TaskPriority[] = ["Baixa", "Média", "Alta"];
 
+// Funções para chamar a API
+const API_BASE = "/api/tasks";
+
+async function fetchUserTasks(userId: number): Promise<Task[]> {
+  const res = await fetch(`${API_BASE}?userId=${userId}`);
+  if (!res.ok) throw new Error("Falha ao buscar tarefas");
+  return res.json();
+}
+
+async function addNewTask(userId: number, task: Omit<Task, "id" | "userId">) {
+  const res = await fetch(API_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...task, userId }),
+  });
+  if (!res.ok) throw new Error("Falha ao criar tarefa");
+  return res.json();
+}
+
+async function removeTask(taskId: number) {
+  const res = await fetch(`${API_BASE}/${taskId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Falha ao deletar tarefa");
+}
+
+async function completeTask(taskId: number) {
+  const res = await fetch(`${API_BASE}/${taskId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "completed" }),
+  });
+  if (!res.ok) throw new Error("Falha ao concluir tarefa");
+  return res.json();
+}
+
+// *** Componente Dashboard ***
 export default function Dashboard() {
+  // Simule o userId autenticado
+  const userId = 1; // Aqui você pode integrar sua autenticação real
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [form, setForm] = useState({
     title: "",
@@ -22,13 +54,9 @@ export default function Dashboard() {
     dueDate: "",
   });
 
-  const user = getAuth().currentUser;
-
   useEffect(() => {
-    if (user) {
-      fetchUserTasks(user.uid).then(setTasks);
-    }
-  }, [user]);
+    fetchUserTasks(userId).then(setTasks).catch(console.error);
+  }, [userId]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -39,29 +67,49 @@ export default function Dashboard() {
   };
 
   async function handleAddTask() {
-    if (!form.title || !form.dueDate || !user) return;
+    if (!form.title || !form.dueDate) return;
 
-    const task = {
+    const taskToAdd = {
       ...form,
+      dueDate: new Date(form.dueDate).toISOString(),
       category: "geral",
+      status: "pending" as const,
+      xp: 10, // exemplo XP fixo
     };
 
-    await addNewTask(user.uid, task);
-    const updated = await fetchUserTasks(user.uid);
-    setTasks(updated);
-    setForm({ title: "", description: "", priority: "Baixa", dueDate: "" });
+    try {
+      await addNewTask(userId, taskToAdd);
+      const updated = await fetchUserTasks(userId);
+      setTasks(updated);
+      setForm({ title: "", description: "", priority: "Baixa", dueDate: "" });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  async function handleDelete(taskId: string) {
-    await removeTask(taskId);
-    setTasks(tasks.filter((t) => t.id !== taskId));
+  async function handleDelete(taskId: number) {
+    try {
+      await removeTask(taskId);
+      setTasks(tasks.filter((t) => t.id !== taskId));
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  async function handleComplete(taskId: string) {
-    await completeTask(taskId);
-    const updated = await fetchUserTasks(user!.uid);
-    setTasks(updated);
+  async function handleComplete(taskId: number) {
+    try {
+      await completeTask(taskId);
+      const updated = await fetchUserTasks(userId);
+      setTasks(updated);
+    } catch (error) {
+      console.error(error);
+    }
   }
+
+  const totalXP = tasks.reduce(
+    (sum, task) => (task.status === "completed" ? sum + task.xp : sum),
+    0
+  );
 
   return (
     <div id="dashboard">
@@ -69,7 +117,6 @@ export default function Dashboard() {
       <h1>Dashboard</h1>
       <div className="dashboard-grid">
         <div className="dashboard-left">
-          {/* Seção: Nova Tarefa */}
           <section className="nova-tarefa">
             <h2>Nova Tarefa</h2>
 
@@ -139,7 +186,6 @@ export default function Dashboard() {
             </button>
           </section>
 
-          {/* Seção: Minhas Tarefas */}
           <section className="minhas-tarefas">
             <h2>Minhas Tarefas</h2>
 
@@ -196,38 +242,22 @@ export default function Dashboard() {
           </section>
         </div>
 
-        {/* Seção: Estatísticas */}
         <div className="dashboard-right">
           <section id="dashboard-stats" className="dashboard-stats">
             <h2>Estatísticas</h2>
 
             <p id="total-tasks">
-              Tarefas Concluídas:{" "}
-              {tasks.filter((t) => t.status === "completed").length}/
-              {tasks.length}
+              Tarefas Concluídas: {tasks.filter((t) => t.status === "completed").length}/{tasks.length}
             </p>
 
-            <p id="total-xp">
-              XP Total:{" "}
-              {tasks.reduce(
-                (sum, task) =>
-                  task.status === "completed" ? sum + task.xp : sum,
-                0
-              )}
-            </p>
+            <p id="total-xp">XP Total: {totalXP}</p>
 
-            <ProgressBar
-              currentXP={tasks.reduce(
-                (sum, task) =>
-                  task.status === "completed" ? sum + task.xp : sum,
-                0
-              )}
-            />
+            <ProgressBar currentXP={totalXP} />
           </section>
           <img
-              src = "/images/bunny-image-dash.png"
-              alt="Coelho astronauta"
-              className="floating-image"
+            src="/images/bunny-image-dash.png"
+            alt="Coelho astronauta"
+            className="floating-image"
           />
         </div>
       </div>

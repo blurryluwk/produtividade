@@ -1,40 +1,34 @@
-import { Task, TaskPriority } from "../types/task";
-import * as taskRepo from "../repositories/taskRepository";
+import { Task } from "../types/task";
 
-function calculateXP(priority: TaskPriority): number {
-  switch (priority) {
-    case "Alta": return 30;
-    case "Média": return 20;
-    case "Baixa": return 10;
-  }
-}
-
-export async function addNewTask(userId: string, data: Omit<Task, "userId" | "xp" | "status" | "createdAt" | "id">): Promise<Task> {
-  const task: Task = {
-    ...data,
-    userId,
-    status: "pending",
-    xp: calculateXP(data.priority),
-    createdAt: new Date().toISOString(),
-  };
-  return taskRepo.createTask(task);
-}
+const API_BASE = "/api/tasks";
 
 export async function fetchUserTasks(userId: string): Promise<Task[]> {
-  return taskRepo.getTasksByUser(userId);
+  const res = await fetch(`${API_BASE}?userId=${userId}`);
+  if (!res.ok) throw new Error("Failed to fetch tasks");
+  return res.json();
 }
 
-export async function editTask(taskId: string, data: Partial<Task>): Promise<void> {
-  if (data.priority) {
-    data.xp = calculateXP(data.priority);
-  }
-  await taskRepo.updateTask(taskId, data);
+export async function addNewTask(userId: string, task: Omit<Task, "id" | "userId">): Promise<Task> {
+  const res = await fetch(API_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...task, userId }),
+  });
+  if (!res.ok) throw new Error("Failed to add task");
+  return res.json();
 }
 
 export async function removeTask(taskId: string): Promise<void> {
-  await taskRepo.deleteTask(taskId);
+  const res = await fetch(`${API_BASE}/${taskId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete task");
 }
 
-export async function completeTask(taskId: string) {
-  return await taskRepo.updateTask(taskId, { status: 'completed' });
+export async function completeTask(taskId: string): Promise<Task> {
+  const res = await fetch(`${API_BASE}/${taskId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "completed" }),
+  });
+  if (!res.ok) throw new Error("Failed to complete task");
+  return res.json();
 }

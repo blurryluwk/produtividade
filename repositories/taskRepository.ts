@@ -1,26 +1,72 @@
-import { Task } from "../types/task";
-import { db } from "../lib/firebaseConfig"; // supondo que exporta Firestore configurado
-import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, where } from "firebase/firestore";
+import { Task, TaskPriority } from "../types/task";
+import prisma from "../lib/prisma";
 
-const tasksCollection = collection(db, "tasks");
+// Converte o tipo do retorno do Prisma para Task
+function mapPrismaTaskToTask(prismaTask: any): Task {
+  return {
+    id: prismaTask.id,
+    userId: prismaTask.userId,
+    title: prismaTask.title,
+    description: prismaTask.description,
+    priority: prismaTask.priority as TaskPriority,
+    dueDate: prismaTask.dueDate.toISOString(), // converte Date para string ISO
+    category: prismaTask.category,
+    status: prismaTask.status,
+    xp: prismaTask.xp,
+    createdAt: prismaTask.createdAt,
+  };
+}
 
+// Cria uma nova tarefa
 export async function createTask(task: Task): Promise<Task> {
-  const docRef = await addDoc(tasksCollection, task);
-  return { ...task, id: docRef.id };
+  const newTask = await prisma.task.create({
+    data: {
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      dueDate: new Date(task.dueDate),
+      category: task.category,
+      status: task.status,
+      xp: task.xp,
+      userId: task.userId,
+      createdAt: task.createdAt || new Date(),
+    },
+  });
+
+  return mapPrismaTaskToTask(newTask);
 }
 
-export async function getTasksByUser(userId: string): Promise<Task[]> {
-  const q = query(tasksCollection, where("userId", "==", userId));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Task[];
+// Busca todas as tarefas de um usuário
+export async function getTasksByUser(userId: number): Promise<Task[]> {
+  const tasks = await prisma.task.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  return tasks.map(mapPrismaTaskToTask);
 }
 
-export async function updateTask(taskId: string, data: Partial<Task>): Promise<void> {
-  const docRef = doc(tasksCollection, taskId);
-  await updateDoc(docRef, data);
+// Atualiza uma tarefa por ID
+export async function updateTask(taskId: number, data: Partial<Task>): Promise<void> {
+  // Se 'dueDate' estiver presente em data, converta para Date
+  const dataToUpdate = {
+    ...data,
+    dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+  };
+
+  await prisma.task.update({
+    where: { id: taskId },
+    data: dataToUpdate,
+  });
 }
 
-export async function deleteTask(taskId: string): Promise<void> {
-  const docRef = doc(tasksCollection, taskId);
-  await deleteDoc(docRef);
+// Deleta uma tarefa por ID
+export async function deleteTask(taskId: number): Promise<void> {
+  await prisma.task.delete({
+    where: { id: taskId },
+  });
 }

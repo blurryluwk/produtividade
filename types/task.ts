@@ -1,14 +1,14 @@
 export type TaskPriority = "Baixa" | "Média" | "Alta";
 
 export interface Task {
-  id?: string;
-  userId: string;
+  id?: number;
+  userId: number;
   title: string;
   description: string;
   priority: TaskPriority;
-  dueDate: string; 
+  dueDate: string;
   category: string;
   status: "pending" | "completed";
   xp: number;
-  createdAt: string; 
+  createdAt?: Date;
 }

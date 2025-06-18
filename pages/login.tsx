@@ -1,29 +1,49 @@
-import { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from '../lib/firebaseConfig';
-import { useRouter } from 'next/router';
-import '../app/globals.css';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import "../app/globals.css";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const auth = getAuth(app);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      router.push('/dashboard');
-    } catch (error: any) {
-      setErro(error.message || 'Erro no login');
-    }
-  };
 
-  const irParaCadastro = () => {
-    router.push('/signup');
+    if (!email || !senha) {
+      setErro("Preencha email e senha");
+      return;
+    }
+
+    setErro("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: senha }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErro(data.error || "Erro no login");
+        setLoading(false);
+        return;
+      }
+
+      // Armazena token (você pode usar cookie httpOnly para segurança melhor)
+      localStorage.setItem("token", data.token);
+
+      // Redireciona para dashboard
+      router.push("/dashboard");
+    } catch (error) {
+      setErro("Erro de rede");
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,21 +54,22 @@ export default function LoginPage() {
           type="email"
           placeholder="Digite seu email..."
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Digite sua senha..."
           value={senha}
-          onChange={e => setSenha(e.target.value)}
+          onChange={(e) => setSenha(e.target.value)}
+          required
         />
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
       </form>
 
-      <div
-        className="signup-link"
-        onClick={irParaCadastro}
-      >
+      <div className="signup-link" onClick={() => router.push("/signup")}>
         Crie sua conta aqui!
       </div>
 
