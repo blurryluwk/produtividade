@@ -9,6 +9,7 @@ import { Task, TaskPriority } from "../types/task";
 import { getAuth } from "firebase/auth";
 import ProgressBar from "../components/ProgressBar";
 import "../app/globals.css";
+import StarParticles from "../components/StarParticles";
 
 const priorities: TaskPriority[] = ["baixa", "média", "alta"];
 
@@ -64,6 +65,7 @@ export default function Dashboard() {
 
   return (
     <div id="dashboard">
+      <StarParticles />
       <h1>Dashboard</h1>
       <div className="dashboard-grid">
         <div className="dashboard-left">
@@ -222,6 +224,11 @@ export default function Dashboard() {
               )}
             />
           </section>
+          <img
+              src = "/images/bunny-image-dash.png"
+              alt="Coelho astronauta"
+              className="floating-image"
+          />
         </div>
       </div>
     </div>
