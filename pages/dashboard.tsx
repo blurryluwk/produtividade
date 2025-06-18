@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    priority: "baixa" as TaskPriority,
+    priority: "Baixa" as TaskPriority,
     dueDate: "",
   });
 
@@ -49,7 +49,7 @@ export default function Dashboard() {
     await addNewTask(user.uid, task);
     const updated = await fetchUserTasks(user.uid);
     setTasks(updated);
-    setForm({ title: "", description: "", priority: "baixa", dueDate: "" });
+    setForm({ title: "", description: "", priority: "Baixa", dueDate: "" });
   }
 
   async function handleDelete(taskId: string) {
