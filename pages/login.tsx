@@ -24,7 +24,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: senha }),
+        body: JSON.stringify({ email, senha }), // corrigido aqui
       });
 
       const data = await res.json();
@@ -35,8 +35,10 @@ export default function LoginPage() {
         return;
       }
 
-      // Armazena token (você pode usar cookie httpOnly para segurança melhor)
+      // Armazena token (pode melhorar segurança usando cookie httpOnly)
       localStorage.setItem("token", data.token);
+
+      setLoading(false);
 
       // Redireciona para dashboard
       router.push("/dashboard");

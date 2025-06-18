@@ -24,10 +24,10 @@ model Task {
   description String
   priority    String
   dueDate     DateTime
-  category    String
   status      String   @default("pending")
   xp          Int
   createdAt   DateTime @default(now())
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
 }
+

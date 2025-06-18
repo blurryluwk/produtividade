@@ -10,7 +10,6 @@ function mapPrismaTaskToTask(prismaTask: any): Task {
     description: prismaTask.description,
     priority: prismaTask.priority as TaskPriority,
     dueDate: prismaTask.dueDate.toISOString(), // converte Date para string ISO
-    category: prismaTask.category,
     status: prismaTask.status,
     xp: prismaTask.xp,
     createdAt: prismaTask.createdAt,
@@ -25,7 +24,6 @@ export async function createTask(task: Task): Promise<Task> {
       description: task.description,
       priority: task.priority,
       dueDate: new Date(task.dueDate),
-      category: task.category,
       status: task.status,
       xp: task.xp,
       userId: task.userId,

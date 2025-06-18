@@ -20,7 +20,7 @@ async function addNewTask(userId: number, task: Omit<Task, "id" | "userId">) {
   const res = await fetch(API_BASE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...task, userId }),
+    body: JSON.stringify({ ...task, userId }), // ok, passa userId
   });
   if (!res.ok) throw new Error("Falha ao criar tarefa");
   return res.json();
@@ -72,9 +72,8 @@ export default function Dashboard() {
     const taskToAdd = {
       ...form,
       dueDate: new Date(form.dueDate).toISOString(),
-      category: "geral",
       status: "pending" as const,
-      xp: 10, // exemplo XP fixo
+      xp: 10,
     };
 
     try {
@@ -247,7 +246,9 @@ export default function Dashboard() {
             <h2>Estatísticas</h2>
 
             <p id="total-tasks">
-              Tarefas Concluídas: {tasks.filter((t) => t.status === "completed").length}/{tasks.length}
+              Tarefas Concluídas:{" "}
+              {tasks.filter((t) => t.status === "completed").length}/
+              {tasks.length}
             </p>
 
             <p id="total-xp">XP Total: {totalXP}</p>

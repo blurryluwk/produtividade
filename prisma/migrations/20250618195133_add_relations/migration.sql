@@ -18,7 +18,6 @@ CREATE TABLE `Task` (
     `description` VARCHAR(191) NOT NULL,
     `priority` VARCHAR(191) NOT NULL,
     `dueDate` DATETIME(3) NOT NULL,
-    `category` VARCHAR(191) NOT NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `xp` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
